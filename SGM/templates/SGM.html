@@ -1,0 +1,160 @@
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+{% extends 'index.html' %}
+{% block title %} 学生成绩操作{% endblock %}
+{% block content %}
+    <script>
+        function  get_select_value() {
+        var visible = document.getElementById("UC").value;
+        if(visible == '1')
+        {
+            document.getElementById("Insert_Option").style.display = '';
+            document.getElementById("New_Option").style.display = '';
+            document.getElementById("Delete_Option").style.display = 'none';
+            document.getElementById("Old_Option").style.display = 'none';
+        }
+        if(visible == '2')
+        {
+            document.getElementById("Delete_Option").style.display = 'none';
+            document.getElementById("Insert_Option").style.display = '';
+            document.getElementById("Old_Option").style.display = '';
+            document.getElementById("New_Option").style.display = 'none';
+
+        }
+        if(visible == '3')
+        {
+            document.getElementById("Delete_Option").style.display = '';
+            document.getElementById("Insert_Option").style.display = 'none';
+            document.getElementById("Old_Option").style.display = 'none';
+            document.getElementById('New_Option').style.display = 'none';
+        }
+    }
+        function  get_select_class(){
+        $.ajax({
+
+            type : "POST",
+            url : "/SGM/get_Class",
+            data: {num: $("#num").val()},
+            success : function(result) {
+                result = eval(result)
+                var str = ""
+                for(i = 0; i< result.length; i++)
+                {
+                    str += "<option value = " + result[i] + ">" + result[i] + "</option>"
+                }
+                $("#CG").prepend(str)
+            },
+        });
+    }
+        function get_grade() {
+            $.ajax({
+            type : "POST",
+            url : "/SGM/get_Grade",
+            data: {num: $("#num").val(), course:$("#CG").val()},
+            success : function(result) {
+                result = eval(result)
+                alert(result)
+                $("#OC").text('原成绩' + result[0]['成绩'])
+            }
+            //请求失败，包含具体的错误信息
+        });
+        }
+        function valid_delete() {
+            first = $("#first").val()
+            second = $("#second").val()
+           if(first == second)
+           {
+               document.getElementById("delete_submit").style.display = '';
+           }
+           else{
+               alert("输入不一致 请重新输入");
+           }
+        }
+        function get_delete_class(){
+  $.ajax({
+            type : "POST",
+            url : "/SGM/get_Delete_Class",
+            data: {num: $("#first").val()},
+            success : function(result) {
+                result = eval(result)
+                var str = "<option> </option>"
+                for(i = 0; i< result.length; i++)
+                {
+                    str += "<option value = " + result[i]['课程名'] + ">" + result[i]['课程名'] + "</option>"
+                }
+                var choice = $("#CD option:selected").text()
+                $("#CD option").remove()
+                $("#CD").prepend(str)
+                  setTimeout(function(){
+                    $("#CD").val(choice)
+                },1500)
+            },
+        });
+    }
+    </script>
+<div style="padding-left: 15%;padding-top: 3%">
+    <header style="font-size: xx-large">学生成绩操作选择</header>
+    <br/>
+    <div style="width:40%">
+        <label >选择操作</label>
+    	<!-- 样式1 -->
+		<select class="form-control" id = "UC" onchange="get_select_value()">
+            <option value="0"></option>
+			<option value="1">学生成绩录入</option>
+			<option value="2">修改学生成绩</option>
+			<option value="3">删除学生成绩</option>
+		</select>
+    </div>
+
+    <br/>
+<form  action="/SGM/insert_grade" method="post" id = 'Insert_Option' style="display:none">
+   <div class="form-group">
+    <label for="grade">学号</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name = "num" id="num" placeholder="请输入学号">
+    </div>
+  <div class="form-group">
+    <label>请选择成绩科目</label>
+    <select class="form-control"  style="width:40%" name = "CG" id = "CG" onclick="get_select_class()" >
+
+    </select>
+  </div>
+    <div class="form-group" id = "New_Option">
+    <label for="grade" >录入成绩</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="grade" id = "grade">
+  </div>
+    <div class="form-group" id = "Old_Option">
+    <label for="grade" id = "OC">修改成绩</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="grade1" id = "grade" onclick="get_grade()">
+  </div>
+  <div class="form-group" id = 'batch_input'>
+    <label for="inputfile">学生成绩批量导入</label>
+    <input type="file" name="inputfile" id = "Scrat">
+    <p class="help-block">对成绩进行整体导入</p>
+  </div>
+
+  <button type="submit" class="btn btn-default">提交</button>
+
+</form>
+<form  action="/SGM/delete_grade" method="post" id = 'Delete_Option' style="display:none;">
+    <div class="form-group">
+    <label>请输入要删除学生成绩的学生学号</label>
+    <input type="text" class="form-control" style="width: 40%;" id = 'first' name="del_first" placeholder="请输入学号">
+    <label>请确认要删除学生成绩的学生学号</label>
+    <input type="text" class="form-control" style="width: 40%;" id = 'second' name="del_second" placeholder="请确认学号" onchange="valid_delete()">
+      <div class="form-group">
+    <label>请选择成绩科目</label>
+    <select class="form-control"  style="width:40%" name = "CD" id = "CD" onclick="get_delete_class()" >
+    </select>
+  </div>
+        <br/>
+        <button id = 'delete_submit' style="display:none" type="submit" class="btn btn-default">提交</button>
+  </div>
+</form>
+
+
+
+</div>
+{% endblock %}

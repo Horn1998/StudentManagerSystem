@@ -1,0 +1,125 @@
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+ <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.13.4/dist/bootstrap-table.min.css" rel="stylesheet">
+{% extends 'index.html' %}
+{% block title %} 学生信息查询{% endblock %}
+{% block content %}
+    <style>
+    .text-center{
+        text-align: center;
+        height: 40px;
+        background-color: lightgrey;
+    }
+    </style>
+<script>
+    function get_select_val() {
+        group = $("#choicetype").val();
+        for(i = 0; i < group.length; i++)
+        {
+            if(group[i] == '1'){
+                document.getElementById('num').style.display = ""
+            }
+            if(group[i] == '2'){
+                document.getElementById('age').style.display = ""
+            }
+            if(group[i] == '3'){
+                document.getElementById('sex').style.display = ""
+            }
+            if(group[i] == '4'){
+                document.getElementById('status').style.display = ""
+            }
+            if(group[i] == '5'){
+                document.getElementById('name').style.display = ""
+            }
+        }
+    }
+    $(function(){
+        {% if target == 0 %}
+            var answer = {{ ans|safe }}
+            var rows = []
+            var str = ''
+            console.log(answer)
+            for(i = 0;i<answer.length;i++)
+
+                str += "<tr>" +
+                '<td>' + answer[i][0] + '</td>' +
+                '<td>' + answer[i][1] + '</td>' +
+                '<td>' + answer[i][2] + '</td>' +
+                '<td>' + answer[i][3] + '</td>' +
+                '<td>' + answer[i][4] + '</td>' +
+                '</tr>' ;
+
+            {#$("#table").bootstrapTable('append', rows)#}
+            $("#table").prepend(str)
+            $("td,th").addClass("text-center")
+            $("td,th").style.height()
+        {% endif %}
+    })
+</script>
+<div style="padding-left: 15%;padding-top: 3%">
+    <header style="font-size: xx-large">学生信息查询方式</header>
+    <br/>
+    <div style="width:40%">
+        <label >选择操作</label>
+    	<!-- 样式1 -->
+    <select  id="choicetype" name="choicetype" class="selectpicker show-tick form-control" multiple data-live-search="false" onchange="get_select_val()">
+			<option value="1">学号</option>
+			<option value="2">年龄</option>
+			<option value="3">性别</option>
+            <option value="4">状态</option>
+            <option value="5">姓名</option>
+    </select>
+    </div>
+    <form  action="/SMQ/find_message" method="post" id = 'Find_Option'>
+    <br/>
+    <div class="form-group" id = "num" style="display: none">
+    <label for="num">学号</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="num" >
+    </div>
+    <div class="form-group"  id = "sex"  style="display:none;">
+    <label for="sex">性别</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="sex">
+    </div>
+    <div class="form-group" id = "age" style="display: none">
+    <label for="age">年龄</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="age">
+  </div>
+        <div class="form-group" id = "name" style="display: none">
+    <label for="name">姓名</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="name" >
+  </div>
+    <div class="form-group" style="display: none" id = "status">
+    <label for="name">状态</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="status" >
+    <br/>
+  </div>
+        <button  type="submit" class="btn btn-default">查询</button>
+   </form>
+    <br/>
+</div>
+<div>
+<table class="table table-condensed"
+          id="table"
+          data-toggle="table"
+          data-toolbar="#toolbar"
+          data-height="400"
+          data-search="true" >
+          <thead class="thead-light" >
+            <tr style="background-color: #a41515">
+              <th data-field="num" style="background-color: #a41515">学号</th>
+              <th data-field="name" style="background-color: #a41515">姓名</th>
+              <th data-field="age" style="background-color: #a41515">年龄</th>
+              <th data-field="sex" style="background-color: #a41515">性别</th>
+              <th data-field="stauts" style="background-color: #a41515">状态</th>
+            </tr>
+          </thead>
+        </table>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+ <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+{% extends 'index.html' %}
+{% block title %} 学生信息操作{% endblock %}
+{% block content %}
+    <script>
+    $(function(){
+        {% if target == 1 %}
+            document.getElementById('Change_Option').style.display = '';
+            document.getElementById('Find_Option').style.display = '';
+            document.getElementById("Delete_Option").style.display = 'none';
+            document.getElementById("Insert_Option").style.display = 'none';
+            $("#oname").attr("value","{{ name }}");
+            $("#oage").attr("value",{{ age }});
+            $("#osex").attr("value","{{ sex }}");
+            $("#ostatus").attr("value","{{status}}");
+            $("#onum").attr("value","{{num}}");
+        {% elif target == 0 %}
+            alert("查无此人")
+            document.getElementById('Change_Option').style.display = '';
+            document.getElementById('Find_Option').style.display = '';
+            document.getElementById("Delete_Option").style.display = 'none';
+            document.getElementById("Insert_Option").style.display = 'none';
+        {% elif target == 2 %}
+            alert("{{ ans }}")
+        {% endif %}
+    });
+    function  get_select_value() {
+        var visible = document.getElementById("UC").value;
+        if(visible == '1')
+        {
+            document.getElementById("Insert_Option").style.display = '';
+            document.getElementById("Delete_Option").style.display = 'none';
+            document.getElementById("Change_Option").style.display = 'none';
+            document.getElementById('Find_Option').style.display = 'none';
+        }
+        if(visible == '2')
+        {
+            document.getElementById("Delete_Option").style.display = 'none';
+            document.getElementById("Insert_Option").style.display = 'none';
+            document.getElementById("Change_Option").style.display = '';
+            document.getElementById('Find_Option').style.display = '';
+        }
+        if(visible == '3')
+        {
+            document.getElementById("Delete_Option").style.display = '';
+            document.getElementById("Insert_Option").style.display = 'none';
+            document.getElementById("Change_Option").style.display = 'none';
+            document.getElementById('Find_Option').style.display = 'none';
+        }
+    }
+    function valid_delete() {
+        first = $("#first").val()
+        second = $("#second").val()
+       if(first == second)
+       {
+           document.getElementById("delete_submit").style.display = '';
+       }
+       else{
+           alert("输入不一致 请重新输入");
+       }
+    }
+    </script>
+<div style="padding-left: 15%;padding-top: 3%">
+    <header style="font-size: xx-large">学生信息操作选择</header>
+    <br/>
+    <div style="width:40%">
+        <label >选择操作</label>
+    	<!-- 样式1 -->
+		<select class="form-control" id = "UC" onchange="get_select_value()">
+            <option value="0"></option>
+			<option value="1">学生信息导入</option>
+			<option value="2">修改学生信息</option>
+			<option value="3">删除学生信息</option>
+		</select>
+    </div>
+
+    <br/>
+<form  action="/SMM/insert_message" method="post" id = 'Insert_Option' style="display:none">
+
+  <div class="form-group">
+    <label>请先输入学生学号</label>
+    <input type="text" class="form-control" style="width: 40%;" name="num" placeholder="请输入学号">
+  </div>
+
+
+    <div class="form-group">
+    <label for="sex">性别</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="sex" placeholder="请输入性别">
+    </div>
+    <div class="form-group">
+    <label for="age">年龄</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="age" placeholder="请输入年龄">
+  </div>
+        <div class="form-group">
+    <label for="name">姓名</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="name" placeholder="请输入姓名">
+  </div>
+  <div class="form-group">
+    <label for="inputfile">学生信息批量导入</label>
+    <input type="file" name="inputfile" id = "Scrat">
+    <p class="help-block">对新班级进行整体导入</p>
+  </div>
+{#  <div class="checkbox">#}
+{#    <label>#}
+{#      <input type="checkbox">请打勾#}
+{#    </label>#}
+{#  </div>#}
+  <button type="submit" class="btn btn-default">提交</button>
+
+</form>
+<form  action="/SMM/delete_message" method="post" id = 'Delete_Option' style="display:none;">
+    <div class="form-group">
+    <label>请输入要删除学生学号</label>
+    <input type="text" class="form-control" style="width: 40%;" id = 'first' name="del_first" placeholder="请输入学号">
+    <label>请确认要删除学生学号</label>
+    <input type="text" class="form-control" style="width: 40%;" id = 'second' name="del_second" placeholder="请确认学号" onchange="valid_delete()">
+    <br/>
+        <button id = 'delete_submit' style="display:none" type="submit" class="btn btn-default">提交</button>
+  </div>
+</form>
+<form  action="/SMM/find_message" method="post" id = 'Find_Option' style="display:none;">
+    <div class="form-group">
+    <label>请输入要修改学生学号</label>
+    <input type="text" class="form-control" style="width: 40%;" id = 'change' name="mul" placeholder="请输入学号">
+
+    <br/>
+        <button id = 'change_submit' type="submit" class="btn btn-default">确定</button>
+  </div>
+</form>
+<form  action="/SMM/change_message" method="post" id = 'Change_Option' style="display:none;">
+    <br/>
+    <div class="form-group">
+    <label for="num">学号</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="onum"  id = "onum">
+    </div>
+    <div class="form-group">
+    <label for="sex">性别</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="osex"  id = "osex">
+    </div>
+    <div class="form-group">
+    <label for="age">年龄</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="oage" id = "oage">
+  </div>
+        <div class="form-group">
+    <label for="name">姓名</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="oname" id = "oname">
+  </div>
+    <div class="form-group">
+    <label for="name">状态</label>
+      <br>
+    <input type="text" class="form-control" style="width: 40%;" name="ostatus" id = "ostatus">
+    <br/>
+    <button  type="submit" class="btn btn-default">提交</button>
+  </div>
+</form>
+</div>
+{% endblock %}

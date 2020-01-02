@@ -1,0 +1,175 @@
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+{% extends 'index.html' %}
+{% block title %} 学生学期成绩查询{% endblock %}
+{% block content %}
+    <script>
+    function get_select_val() {
+         var semester = $("#choicetype").val();
+    }
+    $(function(){
+          var cc = {{ clist|safe }}
+          var str ="<option >  </option>"
+          for(i = 0; i < cc.length;i++)
+          {
+              str +="<option value = " + cc[i]['班级'] + "> " + cc[i]['班级'] +" </option>"
+          }
+
+          $("#classtype").prepend(str)
+    })
+    function get_class() {
+        $.ajax({
+            type : "POST",
+            url : "/SGQ/get_Class",
+            data: {class: $("#classtype option:selected").text()},
+            success : function(result) {
+
+                result = eval(result)
+                console.log(result)
+                $("#classes").html("")
+                str = "<th data-field=\" num \" style=\"background-color: rgba(178,216,136,0.17); width:200px\"> 学号 </th>"
+                for(i = 0; i< result.length; i++)
+                {
+                    console.log(result[i])
+                    str +=  "<th data-field=" + result[i] + " style=\"background-color: rgba(178,216,136,0.17); width:200px\">" + result[i] + "</th>"
+                }
+                str += "<th data-field=\" total \" style=\"background-color: rgba(178,216,136,0.17); width:200px\"> 总和 </th>"
+                $("#classes").prepend(str)
+            },
+        });
+
+    }
+    function get_grades() {
+         $.ajax({
+            type : "POST",
+            url : "/SGQ/find_class",
+            data: {classtype: $("#classtype option:selected").text()},
+            success : function(result) {
+                console.log(result)
+                var str = ""
+                for(var key in result)
+                {
+                       str += "<tr>" +
+                           '<td>' + key + '</td>' +
+                           '<td>' + result[key][0][1] + '</td>' +
+                           '<td>' + result[key][1][1] + '</td>' +
+                           '<td>' + result[key][2][1] + '</td>' +
+                           '<td>' + result[key][3][1] + '</td>' +
+                           '<td>' + result[key][4][1] + '</td>' +
+                           '<td>' + result[key][5][1] + '</td>' +
+                    '</tr>' ;
+                }
+                $("#table2").prepend(str)
+                $("td,th").addClass("text-center")
+            },
+        });
+    }
+    function get_excel() {
+        $.ajax({
+            type : "POST",
+            url : "/SGQ/export",
+            data: {classtype: $("#classtype option:selected").text()},
+            success : function(result) {
+                console.log(result)
+                alert(result)
+            },
+        });
+    }
+    function semster_grade() {
+         $.ajax({
+             type: "POST",
+             url: "/SGQ/find_message",
+             data: {nums:'170511101',choicetype: $("#choicetype").val()},
+             success: function (result) {
+                 var str1 = ""
+                 console.log(result)
+                 result = eval(result)
+                 console.log(result)
+                 for (i = 0; i < result['ans'].length; i++)
+                     str1 += "<tr>" +
+                         '<td>' + result['ans'][i][0] + '</td>' +
+                         '<td>' + result['ans'][i][1] +　'</td>' +
+                         '</tr>';
+                 $("#classes td").html("")
+                 $("#table").prepend(str1)
+                 $("td,th").addClass("text-center")
+
+             }
+         })
+    }
+    </script>
+
+    <div style=" width:40%; padding-left: 15%;padding-top: 3%">
+    <header style="font-size: xx-large">学生成绩查询</header>
+    <br/>
+    <form  action="" method="post" id = 'Find_Option'>
+    <br/>
+
+    <div class="form-group" id = "nums" style="width:40%;">
+    <label for="num">学号</label>
+      <br>
+    <input type="text" class="form-control"  name="num" >
+    </div>
+        <div class="form-group" id = "num" style="width:40%;">
+     <select  id="choicetype" name="choicetype" class="form-control">
+			<option value="01">第一学期</option>
+			<option value="02">第二学期</option>
+			<option value="03">第三学期</option>
+            <option value="04">第四学期</option>
+            <option value="05">第五学期</option>
+            <option value="06">第六学期</option>
+            <option value="07">第七学期</option>
+            <option value="08">第八学期</option>
+    </select>
+            <br/>
+            <label  class="btn btn-default" onclick="semster_grade()">查询</label>
+        </div>
+        <table class="table table-condensed"
+          id="table"
+          data-toggle="table"
+          data-toolbar="#toolbar"
+          data-height="400"
+          data-search="true"
+               style="width:50%;text-align: center"
+        >
+          <thead class="thead-light" style="width:30%;text-align: center">
+            <tr style="background-color: rgba(178,216,136,0.17)">
+              <th data-field="nums" style="background-color: rgba(178,216,136,0.17)">课程</th>
+              <th data-field="name" style="background-color: rgba(178,216,136,0.17)">成绩</th>
+            </tr>
+          </thead>
+        </table>
+    </form>
+    </div>
+    <div style=" width:100%; padding-left: 15%;padding-top: 3%">
+    <header style="font-size: xx-large">班级成绩查询</header>
+    <br/>
+    <form  action="/SGQ/find_classes" method="post" id = 'Find_Option'>
+
+    <br/>
+        <div class="form-group" id = "num" style="width:40%;">
+            <label >请选择班级</label>
+     <select  id="classtype" name="classtype" class="form-control" onchange="get_class()">
+    </select>
+            <br/>
+            <label  class="btn btn-default" onclick="get_grades()">查询</label>
+            <label  class="btn btn-default" onclick="get_excel()">导出文件</label>
+        </div>
+
+    </form>
+
+    </div>
+    <table class="table table-condensed"
+          id="table2"
+          data-toggle="table"
+          data-toolbar="#toolbar"
+          data-height="400"
+          data-search="true"
+               style="width:100%;text-align: center"
+        >
+          <thead class="thead-light" style="width:30%;text-align: center">
+            <tr id = 'classes' style="background-color: rgba(178,216,136,0.17)">
+            </tr>
+          </thead>
+        </table>
+{% endblock %}

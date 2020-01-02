@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<style>
+    .sitebar{
+        font-size: large;
+        color:white;
+        height: 60px;
+    }
+</style>
+<div id="sidebar" style="width:20px">
+        {% block sidebar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation" style="width:10%;height:100%;background-color: #0b92e0">
+      <ul class="nav sidebar-nav">
+        <li class="sidebar-brand"> <a href="#" style="font-size: larger;height: 100px; color:white; font-weight: bold; padding-top: 20%; background-color: black"> 学生学籍管理系统 </a> </li>
+        <li> <a href="/SMQ/" class="sitebar"> 学生信息查询 </a> </li>
+        <li> <a href="/SMM/" class="sitebar">  学生信息操作 </a> </li>
+        <li> <a href="/CC/" class="sitebar"> 课程选择 </a> </li>
+        <li> <a href="/SGM/" class="sitebar">学生成绩操作 </a> </li>
+        <li> <a href="/SGQ/" class="sitebar"> 学生成绩查询 </a> </li>
+        <li> <a href="/Special/" class="sitebar"> 特殊情况处理 </a> </li>
+      </ul>
+    </nav>
+        {% endblock %}
+</div>
+<div id="content" style="padding-left: 10%">
+    {% block content %}{% endblock %}
+</div>
